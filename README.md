@@ -34,7 +34,7 @@ function view (state = { title: 'Meson is cool' }, update) {
 There's components in Meson... Take a gander:
 
 ```javascript
-const counter = (name: string) => {
+const counter = (color: string) => {
   return {
     state: { count: 0 },
     onBeforeMount(state, update) {
@@ -60,7 +60,7 @@ const counter = (name: string) => {
       return true
     },
     render(state, update) {
-      return h('div', { id: `counter-${name}` }, [
+      return h('div', { id: `counter-${name}`, style: `color: ${color}` }, [
         h('button', { onclick: () => update({ count: state.count - 1 }) }, 'Decrement'),
         h('span', { id: state.count }, `${state.count} for ${name}`),
         h('button', { onclick: () => update({ count: state.count + 1 }) }, 'Increment'),
@@ -72,9 +72,9 @@ const counter = (name: string) => {
 function view (state = { title: 'Meson is cool' }, update) {
   const updateTitle = () => update({title: 'Meson is AWESOME'})
   return h('div', {}, [
-    counter('two'),
+    counter('red'),
     h('div', { onclick: updateTitle }, state.title),
-    counter('one'),
+    counter('blue'),
   ]) 
 }
 ```
