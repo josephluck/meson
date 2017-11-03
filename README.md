@@ -1,5 +1,7 @@
 # Ξ xi
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/josephluck/meson.svg)](https://greenkeeper.io/)
+
 A minimum viable front-end framework with added virtual DOM
 
 ## Why?
