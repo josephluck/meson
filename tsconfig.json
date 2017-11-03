@@ -7,7 +7,7 @@
     "allowSyntheticDefaultImports": true,
     "preserveConstEnums": true,
     "declaration": true,
-    "outDir": "lib",
+    "outDir": "dist",
     "sourceMap": false,
     "lib": [
       "es6",
@@ -19,6 +19,7 @@
     "removeComments": false
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "tests/**/*"
   ]
 }

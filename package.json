@@ -1,5 +1,5 @@
 {
-  "name": "pion",
+  "name": "meson",
   "version": "0.0.0",
   "description": "Minimum viable framework",
   "main": "lib/index.js",
@@ -9,14 +9,20 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/josephluck/helix"
+    "url": "https://github.com/josephluck/meson"
   },
   "author": "Joseph Luck",
   "scripts": {
-    "start": "budo ./examples/index.ts --live --pushstate --host=localhost --port=8888 --base=/ -- -p tsify"
+    "start": "budo ./examples/index.ts --live --pushstate --host=localhost --port=8888 --base=/ -- -p tsify",
+    "test": "tsc && nightwatch"
   },
   "dependencies": {
+    "@types/nightwatch": "^0.9.3",
+    "@types/node": "^8.0.47",
     "budo": "^10.0.4",
+    "chromedriver": "^2.33.2",
+    "nightwatch": "^0.9.16",
+    "selenium-server": "^3.7.0",
     "ts-node": "^3.3.0",
     "tsify": "^3.0.3",
     "typescript": "^2.5.3"
