@@ -56,49 +56,49 @@ const counter = (name: string): Component<{ count: number }> => {
   }
 }
 
-// const conditionalCounter: Component<{ showing: boolean }> = {
-//   state: { showing: false },
-//   onBeforeMount(state, update) {
-//     console.log('onBeforeMount conditional-counter')
-//   },
-//   onAfterMount(node, state, update) {
-//     node.innerHTML = '<span>Whoospy</span>'
-//     console.log('onAfterMount conditional-counter')
-//   },
-//   onBeforeUnmount(node, state, update) {
-//     console.log('onBeforeUnmount conditional-counter')
-//   },
-//   onAfterUnmount(state, update) {
-//     console.log('onAfterUnmount conditional-counter')
-//   },
-//   onBeforeReplace(state, update) {
-//     console.log('onBeforeReplace conditional-counter')
-//   },
-//   onAfterReplace(state, update) {
-//     console.log('onAfterReplace conditional-counter')
-//   },
-//   shouldRender() {
-//     return false
-//   },
-//   render(state, update) {
-//     return h('div', { id: 'conditional-counter', style: 'margin: 10px; border: solid 1px' }, [
-//       state.showing ? counter('inside-conditional-counter-1') : null,
-//       button('toggle counter', () => update({ showing: !state.showing })),
-//       state.showing ? counter('inside-conditional-counter-2') : null,
-//     ])
-//   }
-// }
+const conditionalCounter: Component<{ showing: boolean }> = {
+  state: { showing: false },
+  onBeforeMount(state, update) {
+    console.log('onBeforeMount conditional-counter')
+  },
+  onAfterMount(node, state, update) {
+    node.innerHTML = '<span>Whoospy</span>'
+    console.log('onAfterMount conditional-counter')
+  },
+  onBeforeUnmount(node, state, update) {
+    console.log('onBeforeUnmount conditional-counter')
+  },
+  onAfterUnmount(state, update) {
+    console.log('onAfterUnmount conditional-counter')
+  },
+  onBeforeReplace(state, update) {
+    console.log('onBeforeReplace conditional-counter')
+  },
+  onAfterReplace(state, update) {
+    console.log('onAfterReplace conditional-counter')
+  },
+  shouldRender() {
+    return false
+  },
+  render(state, update) {
+    return h('div', { id: 'conditional-counter', style: 'margin: 10px; border: solid 1px' }, [
+      state.showing ? counter('inside-conditional-counter-1') : null,
+      button('toggle counter', () => update({ showing: !state.showing })),
+      state.showing ? counter('inside-conditional-counter-2') : null,
+    ])
+  }
+}
 
 const view = (actions: Actions): View<State> => (state) => {
   return h('div', { id: 'container' }, [
     counter(state.title),
-    // conditionalCounter,
+    conditionalCounter,
     h('div', { style: 'margin: 10px; border: solid 1px' }, [
       h('input', { value: state.title, oninput: e => actions.updateTitle(e.target.value) }),
       state.title,
     ]),
-    // counter('counter-2'),
-    // state.title === '' ? conditionalCounter : null,
+    counter('counter-2'),
+    state.title === '' ? conditionalCounter : null,
     null
   ])
 }

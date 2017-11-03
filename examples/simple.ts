@@ -1,4 +1,4 @@
-import { View, h, run } from '../src'
+import { View, h, app } from '../src'
 
 export type MyState = {
   title: string
@@ -16,9 +16,10 @@ const view: View<MyState> = (state = defaultState, update) => {
   }, [state.title])
 }
 
-export default function app() {
+export default function () {
   const node = document.createElement('div')
   node.style.margin = '100px'
   document.body.appendChild(node)
+  const { run } = app(defaultState)
   run(node, view)
 }

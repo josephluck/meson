@@ -1,4 +1,4 @@
-import { h, View, run } from '../src'
+import { h, View, app } from '../src'
 
 type Player = 'x' | 'o'
 type Square = '' | Player
@@ -67,9 +67,10 @@ const view: View<State> = (state = defaultState, update) => {
   return h('div', {}, [renderBoard(), renderWinner()])
 }
 
-export default function app() {
+export default function () {
   const node = document.createElement('div')
   node.style.margin = '100px'
   document.body.appendChild(node)
+  const { run } = app(defaultState)
   run(node, view)
 }
