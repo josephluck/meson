@@ -29,6 +29,7 @@ export type State = {
 }
 
 const view: View<State> = (state, update) => {
+  renderCounts.app++
   const updateTitle = (e) => update({ title: e.target.value })
   return h('div', {}, [
     h('span', { id: 'render-count-app' }, renderCounts.app),
