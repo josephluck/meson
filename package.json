@@ -14,7 +14,8 @@
   "author": "Joseph Luck",
   "scripts": {
     "start": "budo ./examples/index.ts --live --pushstate --host=localhost --port=8888 --base=/ -- -p tsify",
-    "test": "tsc && nightwatch"
+    "test": "tsc && nightwatch",
+    "test-server": "tsc && ts-node ./tests/run-test-server.ts"
   },
   "dependencies": {
     "@types/nightwatch": "^0.9.3",

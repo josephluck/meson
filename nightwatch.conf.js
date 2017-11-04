@@ -1,5 +1,5 @@
 module.exports = {
-  src_folders: ["dist/tests"],
+  src_folders: ["dist/tests/specs"],
   output_folder: "reports",
   custom_commands_path: "",
   custom_assertions_path: "",
