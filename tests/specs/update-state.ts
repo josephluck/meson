@@ -5,7 +5,7 @@ let server
 
 export default {
   before: async (browser, done) => {
-    server = await run('./dist/tests/apps/counter.js')
+    server = await run('./dist/tests/apps/update-state.js')
     done()
   },
 
