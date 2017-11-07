@@ -17,7 +17,10 @@ export default function startApp(app: string): Promise<FrontEndServer> {
         console.log('Running front-end server at url: ', ev.uri)
         resolve({
           domain: ev.uri,
-          stop: server.close
+          stop() {
+            console.log('Closing front-end server for app: ', app)
+            server.close()
+          }
         })
       })
   })

@@ -5,24 +5,48 @@ window['counts'] = {
   componentRender: 0,
   onBeforeMount: 0,
   onAfterMount: 0,
+  onBeforeReplace: 0,
+  onAfterReplace: 0,
+  onBeforeUnmount: 0,
+  onAfterUnmount: 0,
 }
 
 
-const component = (count: number): Component<{}> => {
+const component = (count: number): Component<{ count: number }> => {
   return {
-    state: {},
+    state: {
+      count: 0
+    },
     onBeforeMount() {
       window['counts'].onBeforeMount++
     },
     onAfterMount() {
       window['counts'].onAfterMount++
     },
-    render() {
+    onBeforeReplace() {
+      window['counts'].onBeforeReplace++
+    },
+    onAfterReplace() {
+      window['counts'].onAfterReplace++
+    },
+    onBeforeUnmount() {
+      window['counts'].onBeforeUnmount++
+    },
+    onAfterUnmount() {
+      window['counts'].onAfterUnmount++
+    },
+    render(state, update) {
       window['counts'].componentRender++
       return h('p', { id: 'component' }, [
         h('span', { id: 'component-onBeforeMount-count' }, window['counts'].onBeforeMount),
         h('span', { id: 'component-onAfterMount-count' }, window['counts'].onAfterMount),
+        h('span', { id: 'component-onBeforeReplace-count' }, window['counts'].onBeforeReplace),
+        h('span', { id: 'component-onAfterReplace-count' }, window['counts'].onAfterReplace),
+        h('span', { id: 'component-onBeforeUnmount-count' }, window['counts'].onBeforeUnmount),
+        h('span', { id: 'component-onAfterUnmount-count' }, window['counts'].onAfterUnmount),
         h('span', { id: 'component-render-count' }, window['counts'].render),
+        h('button', { id: 'component-decrement-button', onclick: () => update({ count: state.count - 1 }) }, 'Decrement'),
+        h('span', { id: 'component-state-count' }, state.count),
         'Ahh!'
       ])
     }
