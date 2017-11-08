@@ -13,7 +13,7 @@
   },
   "author": "Joseph Luck",
   "scripts": {
-    "start": "budo ./examples/index.ts --live --pushstate --host=localhost --port=8888 --base=/ -- -p tsify",
+    "start": "budo ./tests/apps/conditional-rendering.ts --live --pushstate --host=localhost --port=8888 --base=/ -- -p tsify",
     "build": "rm -rf dist && tsc",
     "test": "npm run build && nightwatch",
     "test-server": "npm run build && ts-node ./tests/run-test-server.ts"

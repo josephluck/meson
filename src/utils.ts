@@ -1,15 +1,15 @@
 import * as Types from './types'
 
-export function hasVNodeChanged(nodeA: Types.ValidVNode, nodeB: Types.ValidVNode): boolean {
-  const typeHasChanged = typeof nodeA !== typeof nodeB
-  const stringHasChanged = typeof nodeA === 'string' && nodeA !== nodeB
-  const numberHasChanged = typeof nodeA === 'number' && nodeA !== nodeB
-  const vNodeTypeHasChanged = isVNode(nodeA) && isVNode(nodeB) && ((nodeA as Types.VNode).type !== (nodeB as Types.VNode).type)
+export function hasVNodeChanged(newVNode: Types.ValidVNode, oldVNode: Types.ValidVNode): boolean {
+  const typeHasChanged = typeof newVNode !== typeof oldVNode
+  const stringHasChanged = typeof newVNode === 'string' && newVNode !== oldVNode
+  const numberHasChanged = typeof newVNode === 'number' && newVNode !== oldVNode
+  const vNodeTypeHasChanged = isVNode(newVNode) && isVNode(oldVNode) && ((newVNode as Types.VNode).type !== (oldVNode as Types.VNode).type)
   return typeHasChanged || stringHasChanged || numberHasChanged || vNodeTypeHasChanged
 }
 
 export function hasComponentChanged(newComponent: Types.ValidVNode, oldComponent: Types.ValidVNode): boolean {
-  return isComponent(oldComponent) && shouldComponentReplace(newComponent)
+  return isComponent(newComponent) && isComponent(oldComponent) && shouldComponentReplace(newComponent)
 }
 
 export function isVNode(node: Types.ValidVNode): boolean {
@@ -21,7 +21,7 @@ export function isPresent(node: any): boolean {
 }
 
 export function isComponent(vNode: Types.ValidVNode) {
-  return isPresent(vNode) && (vNode as Types.Component).render !== undefined && typeof vNode === 'function'
+  return isPresent(vNode) && (vNode as Types.Component).render !== undefined
 }
 
 export function getLargestArray<A, B>(a: A[], b: B[]) {

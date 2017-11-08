@@ -19,12 +19,12 @@ const view: View<State> = (state = defaultState, update) => {
   renderCount++
   const increment = () => update({ count: state.count + 1 })
   return h('div', {}, [
-    h('span', { id: 'render-count' }, renderCount),
-    h('span', { id: 'count' }, state.count),
+    // h('span', { id: 'render-count' }, renderCount),
+    // h('span', { id: 'count' }, state.count),
     h('button', { id: 'increment-button', onclick: increment }, 'Increment'),
     state.count === 1 ? h('p', { id: 'conditional-element' }, 'Boo!') : null,
     state.count === 2 ? component : null,
-    h('span', { id: 'should-persist-this-element' })
+    h('span', { id: 'should-persist-this-element' }, 'Should persist this element')
   ])
 }
 

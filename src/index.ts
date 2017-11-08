@@ -24,21 +24,22 @@ function createComponent(
     const $oldNode = $parent.childNodes[index]
     const $newNode = createElement(component.render(state, update))
     if ($oldNode && utils.shouldComponentReplace(component)) {
+      console.log('Replacing component', component)
       utils.lifecycle('onBeforeReplace', component)
       $parent.replaceChild($newNode, $oldNode)
       utils.lifecycle('onAfterReplace', component)
-      console.log('Replacing component (from component state change)', component)
     } else if (!$oldNode && utils.shouldComponentMount(component)) {
+      console.log('Appending component', component)
       utils.lifecycle('onBeforeMount', component)
+      // This isn't enough, if there's conditional elements before the element in question
       $parent.appendChild($newNode)
       utils.lifecycle('onAfterMount', component)
-      console.log('Appending component (from within component render method)', component)
     }
   }
   component._update = update
   return utils.shouldComponentMount(component)
     ? createElement(component.render(state, update))
-    : document.createComment(' Component Placeholder ') as any // Should return null here... this seems hacky
+    : null
 }
 
 function createElement(
@@ -53,28 +54,39 @@ function createElement(
     const vNode = validVNode as Types.VNode
     const $parent = document.createElement(vNode.type)
     const children = (vNode.children instanceof Array ? vNode.children : [vNode.children])
-      .filter(utils.isPresent)
     attributes.addAttributes($parent, vNode.props)
     attributes.addEventListeners($parent, vNode.props)
+
+    // Call component lifecycle methods for all component children
     if (create) {
       children
-        .filter(utils.shouldComponentMount)
-        .forEach(child => utils.lifecycle('onBeforeMount', child))
+        .filter(c => utils.isPresent(c) && utils.shouldComponentMount(c))
+        .forEach(c => utils.lifecycle('onBeforeMount', c))
     }
+
     children
       .map((child, i) => utils.isComponent(child)
         ? createComponent($parent, child as Types.Component, i)
         : createElement(child)
       )
-      .forEach($parent.appendChild.bind($parent))
+      .filter(utils.isPresent)
+      .forEach(child => {
+        // This isn't enough, if there's conditional elements before the element in question
+        console.log('Appending child', child)
+        $parent.appendChild(child)
+      })
+
+    // Call component lifecycle methods for all component children
     if (create) {
       children
         .filter(utils.shouldComponentMount)
         .forEach((child, i) => utils.lifecycle('onAfterMount', child, $parent.childNodes[i] as HTMLElement))
     }
+
     return $parent
   } else if (utils.isComponent(validVNode) && $parent) {
-    return createComponent($parent, validVNode as Types.Component, index)
+    const component = createComponent($parent, validVNode as Types.Component, index)
+    return component
   }
 }
 
@@ -84,54 +96,71 @@ function updateElement(
   oldVNode?: Types.ValidVNode,
   index: number = 0,
 ) {
-  const $child = $parent.childNodes[index] as HTMLElement
+  const shouldRemoveVNode = utils.isPresent(oldVNode) && utils.isVNode(oldVNode) && !utils.isPresent(newVNode)
+  const shouldRemoveComponent = utils.isPresent(oldVNode) && utils.isComponent(oldVNode) && !utils.isPresent(newVNode)
+  const shouldAppendVNode = !utils.isPresent(oldVNode) && utils.isVNode(newVNode)
+  const shouldAppendComponent = !utils.isPresent(oldVNode) && utils.isComponent(newVNode) && utils.shouldComponentMount(newVNode)
+  const shouldReplaceVNode = utils.hasVNodeChanged(newVNode, oldVNode)
+  const shouldReplaceComponent = utils.hasComponentChanged(newVNode, oldVNode)
+  const sameVNode = utils.isVNode(newVNode) && utils.isVNode(oldVNode)
 
-  if (!utils.isPresent(oldVNode) && utils.isPresent(newVNode) && utils.isComponent(newVNode) && utils.shouldComponentMount(newVNode)) {
-    utils.lifecycle('onBeforeMount', newVNode)
-    const toAppend = createElement(newVNode, $parent as HTMLElement, index, true)
-    $parent.appendChild(toAppend)
-    utils.lifecycle('onAfterMount', newVNode, toAppend as HTMLElement)
-    console.log('Appending component from outside component', newVNode)
-  }
-
-  else if (!utils.isPresent(oldVNode) && utils.isPresent(newVNode) && utils.isVNode(newVNode)) {
-    const toAppend = createElement(newVNode, $parent as HTMLElement, index, true)
-    $parent.appendChild(toAppend)
-    console.log('Appending vNode', toAppend)
-  }
-
-  else if (!utils.isPresent(newVNode) && utils.isPresent($child)) {
-    $parent.removeChild($child)
-    console.log('Removing vNode', $child)
-    debugger
-  }
-
-  else if (utils.shouldComponentUnmount(newVNode)) {
-    utils.lifecycle('onBeforeUnmount', oldVNode, $child)
-    $parent.replaceChild(document.createComment(' Component Placeholder '), $child) // This seems hacky to me...
+  // Index is not always going to be correct since some elements / components are conditional
+  if (shouldRemoveVNode) {
+    console.log('Removing Vnode')
+    utils.lifecycle('onBeforeUnmount', oldVNode, $parent.childNodes[index] as HTMLElement)
+    // Removing might not work as it cocks up the index
+    $parent.removeChild($parent.childNodes[index])
     utils.lifecycle('onAfterUnmount', oldVNode)
+  }
+
+  else if (shouldRemoveComponent) {
+    // Removing might not work as it cocks up the index
     console.log('Removing component', oldVNode)
+    $parent.removeChild($parent.childNodes[index])
   }
 
-  else if (utils.hasVNodeChanged(newVNode, oldVNode)) {
-    // utils.lifecycle('onBeforeReplace', newVNode)
-    const newNode = createElement(newVNode)
-    $parent.replaceChild(newNode, $child)
-    console.log('Replacing vNode', newNode)
-    // utils.lifecycle('onAfterReplace', newVNode)
+  else if (shouldAppendVNode) {
+    // This isn't enough, if there's conditional elements before the element in question
+    console.log('Appending vNode', newVNode)
+    $parent.appendChild(createElement(newVNode, $parent as HTMLElement, index, true))
   }
 
-  else if (utils.hasComponentChanged(newVNode, oldVNode)) {
+  else if (shouldAppendComponent) {
+    // This isn't enough, if there's conditional elements before the element in question
+    const toAppend = createElement(newVNode, $parent as HTMLElement, index, true)
+    if (utils.isPresent(toAppend)) {
+      console.log('Appending component', newVNode)
+      utils.lifecycle('onBeforeMount', newVNode)
+      $parent.appendChild(toAppend)
+      utils.lifecycle('onAfterMount', newVNode, toAppend as HTMLElement)
+    } else {
+      console.log('Skipping component', newVNode)
+    }
+  }
+
+  else if (shouldReplaceVNode) {
+    console.log('Replacing vNode', newVNode)
+    $parent.replaceChild(createElement(newVNode), $parent.childNodes[index])
+  }
+
+  else if (shouldReplaceComponent) {
     (newVNode as Types.Component).state = (oldVNode as Types.Component).state
-    utils.lifecycle('onBeforeReplace', newVNode)
-    $parent.replaceChild(createElement(newVNode, $parent as HTMLElement, index), $child)
-    utils.lifecycle('onAfterReplace', newVNode)
-    console.log('Replacing component from outside component', newVNode)
+    const toReplace = createElement(newVNode, $parent as HTMLElement, index)
+    if (toReplace) {
+      console.log('Replacing component', newVNode)
+      utils.lifecycle('onBeforeReplace', newVNode)
+      $parent.replaceChild(toReplace, $parent.childNodes[index])
+      utils.lifecycle('onAfterReplace', newVNode)
+    } else {
+      console.log('Skipping component', newVNode)
+    }
   }
 
-  else if (utils.isVNode(newVNode) && utils.isVNode(oldVNode)) {
+  else if (sameVNode) {
+    const $child = $parent.childNodes[index] as HTMLElement
     const nVNode = newVNode as Types.VNode
     const oVNode = oldVNode as Types.VNode
+    console.log('Moving on to children, nothing changed', nVNode)
     const nVNodeChildren = nVNode.children instanceof Array
       ? nVNode.children
       : [nVNode.children]
@@ -142,7 +171,6 @@ function updateElement(
     attributes.updateEventListeners($child, nVNode.props, oVNode.props)
     utils.getLargestArray(nVNodeChildren, oVNodeChildren)
       .forEach((c, i) => {
-        console.log($child, nVNodeChildren[i], oVNodeChildren[i], i)
         updateElement($child, nVNodeChildren[i], oVNodeChildren[i], i)
       })
   }
