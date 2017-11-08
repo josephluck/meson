@@ -23,7 +23,8 @@ const view: View<State> = (state = defaultState, update) => {
     h('span', { id: 'count' }, state.count),
     h('button', { id: 'increment-button', onclick: increment }, 'Increment'),
     state.count === 1 ? h('p', { id: 'conditional-element' }, 'Boo!') : null,
-    state.count === 2 ? component : null
+    state.count === 2 ? component : null,
+    h('span', { id: 'should-persist-this-element' })
   ])
 }
 

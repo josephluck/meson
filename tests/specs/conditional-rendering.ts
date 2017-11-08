@@ -18,6 +18,8 @@ export default {
       .before(2000)
     browser.expect.element('#conditional-element')
       .to.not.be.present
+    browser.expect.element('#should-persist-this-element')
+      .to.be.present
     browser.end()
   },
   'Renders The Conditional Element When The Condition Is Met'(browser: NightwatchBrowser) {
@@ -32,6 +34,8 @@ export default {
       .to.be.present
     browser.expect.element('#conditional-element')
       .text.to.be.equal('Boo!')
+    browser.expect.element('#should-persist-this-element')
+      .to.be.present
     browser.end()
   },
   'Doesnt Render The Conditional Component'(browser: NightwatchBrowser) {
@@ -43,6 +47,8 @@ export default {
       .before(2000)
     browser.expect.element('#conditional-component')
       .to.not.be.present
+    browser.expect.element('#should-persist-this-element')
+      .to.be.present
     browser.end()
   },
   'Renders The Conditional Component When The Condition Is Met'(browser: NightwatchBrowser) {
@@ -58,6 +64,8 @@ export default {
       .to.be.present
     browser.expect.element('#conditional-component')
       .text.to.contain('Ahh!')
+    browser.expect.element('#should-persist-this-element')
+      .to.be.present
     browser.end()
   },
 

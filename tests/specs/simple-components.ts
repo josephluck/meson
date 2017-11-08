@@ -5,7 +5,7 @@ let server
 
 export default {
   before: async (browser, done) => {
-    server = await run('./dist/tests/apps/stateful-counters.js')
+    server = await run('./dist/tests/apps/simple-components.js')
     done()
   },
 

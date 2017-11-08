@@ -9,7 +9,7 @@ export function hasVNodeChanged(nodeA: Types.ValidVNode, nodeB: Types.ValidVNode
 }
 
 export function hasComponentChanged(newComponent: Types.ValidVNode, oldComponent: Types.ValidVNode): boolean {
-  return shouldComponentRender(newComponent) && isComponent(newComponent) && isComponent(oldComponent)
+  return isComponent(oldComponent) && shouldComponentReplace(newComponent)
 }
 
 export function isVNode(node: Types.ValidVNode): boolean {
@@ -21,7 +21,7 @@ export function isPresent(node: any): boolean {
 }
 
 export function isComponent(vNode: Types.ValidVNode) {
-  return isPresent(vNode) && !!(vNode as Types.Component<any>).render
+  return isPresent(vNode) && (vNode as Types.Component).render !== undefined && typeof vNode === 'function'
 }
 
 export function getLargestArray<A, B>(a: A[], b: B[]) {
@@ -33,21 +33,29 @@ export function lifecycle(
   vNode: Types.ValidVNode,
   $node?: HTMLElement,
 ) {
-  if (isComponent(vNode) && (vNode as Types.Component<any>)[method]) {
+  if (isComponent(vNode) && (vNode as Types.Component)[method]) {
     if (method === 'onAfterMount' || method === 'onBeforeUnmount') {
-      (vNode as Types.Component<any>)[method]($node, (vNode as Types.Component<any>).state, (vNode as Types.Component<any>)._update)
+      (vNode as Types.Component)[method]($node, (vNode as Types.Component).state, (vNode as Types.Component)._update)
     } else {
-      (vNode as Types.Component<any>)[method]((vNode as Types.Component<any>).state, (vNode as Types.Component<any>)._update)
+      (vNode as Types.Component)[method]((vNode as Types.Component).state, (vNode as Types.Component)._update)
     }
   }
 }
 
-export function shouldComponentRender(node: Types.ValidVNode): boolean {
-  return isComponent(node) && (node as Types.Component<any>).shouldRender ? (node as Types.Component<any>).shouldRender() : true
+export function shouldComponentMount(node: Types.ValidVNode): boolean {
+  return isComponent(node) && (node as Types.Component).shouldMount
+    ? (node as Types.Component).shouldMount((node as Types.Component).state)
+    : true
+}
+
+export function shouldComponentReplace(node: Types.ValidVNode): boolean {
+  return isComponent(node) && (node as Types.Component).shouldReplace
+    ? (node as Types.Component).shouldReplace((node as Types.Component).state)
+    : true
 }
 
 export function shouldComponentUnmount(node: Types.ValidVNode): boolean {
-  return isComponent(node) && (node as Types.Component<any>).shouldRender
-    ? !(node as Types.Component<any>).shouldRender()
+  return isComponent(node) && (node as Types.Component).shouldMount
+    ? !(node as Types.Component).shouldMount((node as Types.Component).state)
     : false
 }

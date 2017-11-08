@@ -1,3 +1,3 @@
 import server from './server'
 
-server('./dist/tests/apps/component-should-render.js')
+server('./dist/tests/apps/conditional-rendering.js')

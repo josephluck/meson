@@ -8,13 +8,14 @@ let renderCounts = {
 const component = (count: number): Component<{}> => {
   return {
     state: {},
-    shouldMount() {
-      return count === 1
+    shouldReplace() {
+      return false
     },
     render() {
       renderCounts.component++
-      return h('p', { id: 'conditional-component' }, [
+      return h('p', { id: 'component' }, [
         h('span', { id: 'component-render-count' }, renderCounts.component),
+        h('span', { id: 'component-outside-prop' }, count),
         'Ahh!'
       ])
     }

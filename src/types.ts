@@ -3,7 +3,7 @@ export interface VNode {
   props?: any
   children?: ValidVNode | ValidVNode[]
 }
-export interface Component<S> {
+export interface Component<S = any> {
   state: S
   render: View<S>
   onBeforeMount?: OnBeforeMount<S>
@@ -12,7 +12,8 @@ export interface Component<S> {
   onAfterUnmount?: OnAfterUnmount<S>
   onBeforeReplace?: OnBeforeReplace<S>
   onAfterReplace?: OnAfterReplace<S>
-  shouldRender?: () => boolean
+  shouldMount?: (state: S) => boolean
+  shouldReplace?: (state: S) => boolean
   _update?: Updater<S>
 }
 export type ValidLifecycleMethods =
