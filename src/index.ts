@@ -21,6 +21,9 @@ function createComponent(
     render()
   }
   function render() {
+    // This isn't enough, the index may be wrong.
+    // Would be much better to have direct access to the existing component
+    // in this function. Would be passed in from outside
     const $oldNode = $parent.childNodes[index]
     const $newNode = createElement(component.render(state, update))
     if ($oldNode && utils.shouldComponentReplace(component)) {
@@ -31,7 +34,7 @@ function createComponent(
     } else if (!$oldNode && utils.shouldComponentMount(component)) {
       console.log('Appending component', component)
       utils.lifecycle('onBeforeMount', component)
-      // This isn't enough, if there's conditional elements before the element in question
+      // This isn't enough, if there are any skipped elements before the element in question
       $parent.appendChild($newNode)
       utils.lifecycle('onAfterMount', component)
     }
@@ -71,7 +74,7 @@ function createElement(
       )
       .filter(utils.isPresent)
       .forEach(child => {
-        // This isn't enough, if there's conditional elements before the element in question
+        // This isn't enough, if there are any skipped elements before the element in question
         console.log('Appending child', child)
         $parent.appendChild(child)
       })
@@ -96,6 +99,13 @@ function updateElement(
   oldVNode?: Types.ValidVNode,
   index: number = 0,
 ) {
+  // Need a better way of working out the child
+  // One idea is to have an attribute on an oldVNode which is
+  // the DOM element. Essentially, to make the oldVNode stateful
+  // so that replaceChild can look at oldVNode.dom
+
+  // For append child
+  const $child = $parent.childNodes[index] as HTMLElement
   const shouldRemoveVNode = utils.isPresent(oldVNode) && utils.isVNode(oldVNode) && !utils.isPresent(newVNode)
   const shouldRemoveComponent = utils.isPresent(oldVNode) && utils.isComponent(oldVNode) && !utils.isPresent(newVNode)
   const shouldAppendVNode = !utils.isPresent(oldVNode) && utils.isVNode(newVNode)
@@ -107,26 +117,26 @@ function updateElement(
   // Index is not always going to be correct since some elements / components are conditional
   if (shouldRemoveVNode) {
     console.log('Removing Vnode')
-    utils.lifecycle('onBeforeUnmount', oldVNode, $parent.childNodes[index] as HTMLElement)
-    // Removing might not work as it cocks up the index
-    $parent.removeChild($parent.childNodes[index])
+    utils.lifecycle('onBeforeUnmount', oldVNode, $child)
+    // This won't work, we can't rely on the index
+    $parent.removeChild($child)
     utils.lifecycle('onAfterUnmount', oldVNode)
   }
 
   else if (shouldRemoveComponent) {
-    // Removing might not work as it cocks up the index
+    // This won't work, we can't rely on the index
     console.log('Removing component', oldVNode)
-    $parent.removeChild($parent.childNodes[index])
+    $parent.removeChild($child)
   }
 
   else if (shouldAppendVNode) {
-    // This isn't enough, if there's conditional elements before the element in question
+    // This isn't enough, if there are any skipped elements before the element in question
     console.log('Appending vNode', newVNode)
     $parent.appendChild(createElement(newVNode, $parent as HTMLElement, index, true))
   }
 
   else if (shouldAppendComponent) {
-    // This isn't enough, if there's conditional elements before the element in question
+    // This isn't enough, if there are any skipped elements before the element in question
     const toAppend = createElement(newVNode, $parent as HTMLElement, index, true)
     if (utils.isPresent(toAppend)) {
       console.log('Appending component', newVNode)
@@ -140,7 +150,7 @@ function updateElement(
 
   else if (shouldReplaceVNode) {
     console.log('Replacing vNode', newVNode)
-    $parent.replaceChild(createElement(newVNode), $parent.childNodes[index])
+    $parent.replaceChild(createElement(newVNode), $child)
   }
 
   else if (shouldReplaceComponent) {
@@ -149,7 +159,7 @@ function updateElement(
     if (toReplace) {
       console.log('Replacing component', newVNode)
       utils.lifecycle('onBeforeReplace', newVNode)
-      $parent.replaceChild(toReplace, $parent.childNodes[index])
+      $parent.replaceChild(toReplace, $child)
       utils.lifecycle('onAfterReplace', newVNode)
     } else {
       console.log('Skipping component', newVNode)
@@ -157,7 +167,6 @@ function updateElement(
   }
 
   else if (sameVNode) {
-    const $child = $parent.childNodes[index] as HTMLElement
     const nVNode = newVNode as Types.VNode
     const oVNode = oldVNode as Types.VNode
     console.log('Moving on to children, nothing changed', nVNode)
