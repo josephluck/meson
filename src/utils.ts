@@ -5,7 +5,8 @@ export function hasVNodeChanged(newVNode: Types.ValidVNode, oldVNode: Types.Vali
   const stringHasChanged = typeof newVNode === 'string' && newVNode !== oldVNode
   const numberHasChanged = typeof newVNode === 'number' && newVNode !== oldVNode
   const vNodeTypeHasChanged = isVNode(newVNode) && isVNode(oldVNode) && ((newVNode as Types.VNode).type !== (oldVNode as Types.VNode).type)
-  return typeHasChanged || stringHasChanged || numberHasChanged || vNodeTypeHasChanged
+  const hasVNodeTurnedToComponent = (isVNode(newVNode) && isComponent(oldVNode)) || (isVNode(oldVNode) && isComponent(newVNode))
+  return typeHasChanged || stringHasChanged || numberHasChanged || vNodeTypeHasChanged || hasVNodeTurnedToComponent
 }
 
 export function hasComponentChanged(newComponent: Types.ValidVNode, oldComponent: Types.ValidVNode): boolean {

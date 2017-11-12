@@ -8,15 +8,12 @@ export function h(type: keyof HTMLElementTagNameMap, props?: any, children?: Typ
 }
 
 function createComponent(
-  $parent: HTMLElement,
   component: Types.Component,
-  index: number = 0,
+  $dom: HTMLElement | undefined
 ): HTMLElement | Text {
   let state = component.state
   const update = (updater: Types.Updater<any>) => {
-    state = typeof updater === 'function'
-      ? updater(state)
-      : updater
+    state = typeof updater === 'function' ? updater(state) : updater
     component.state = state
     render()
   }
@@ -24,25 +21,18 @@ function createComponent(
     // This isn't enough, the index may be wrong.
     // Would be much better to have direct access to the existing component
     // in this function. Would be passed in from outside
-    const $oldNode = $parent.childNodes[index]
     const $newNode = createElement(component.render(state, update))
-    if ($oldNode && utils.shouldComponentReplace(component)) {
+    if ($dom && utils.shouldComponentReplace(component)) {
       console.log('Replacing component', component)
       utils.lifecycle('onBeforeReplace', component)
-      $parent.replaceChild($newNode, $oldNode)
+      $dom.parentElement.replaceChild($newNode, $dom)
       utils.lifecycle('onAfterReplace', component)
-    } else if (!$oldNode && utils.shouldComponentMount(component)) {
-      console.log('Appending component', component)
-      utils.lifecycle('onBeforeMount', component)
-      // This isn't enough, if there are any skipped elements before the element in question
-      $parent.appendChild($newNode)
-      utils.lifecycle('onAfterMount', component)
     }
   }
   component._update = update
   return utils.shouldComponentMount(component)
     ? createElement(component.render(state, update))
-    : null
+    : document.createTextNode('component-placeholder')
 }
 
 function createElement(
@@ -63,15 +53,19 @@ function createElement(
     // Call component lifecycle methods for all component children
     if (create) {
       children
-        .filter(c => utils.isPresent(c) && utils.shouldComponentMount(c))
-        .forEach(c => utils.lifecycle('onBeforeMount', c))
+        .filter(utils.isComponent)
+        .forEach(component => utils.lifecycle('onBeforeMount', component))
     }
 
     children
-      .map((child, i) => utils.isComponent(child)
-        ? createComponent($parent, child as Types.Component, i)
-        : createElement(child)
-      )
+      .map((child, i) => {
+        if (utils.isComponent(child)) {
+          const $dom = $parent.childNodes[i] as HTMLElement
+          return createComponent(child as Types.Component, $dom)
+        } else {
+          return createElement(child)
+        }
+      })
       .filter(utils.isPresent)
       .forEach(child => {
         // This isn't enough, if there are any skipped elements before the element in question
@@ -82,14 +76,17 @@ function createElement(
     // Call component lifecycle methods for all component children
     if (create) {
       children
-        .filter(utils.shouldComponentMount)
-        .forEach((child, i) => utils.lifecycle('onAfterMount', child, $parent.childNodes[i] as HTMLElement))
+        .forEach((child, i) => {
+          if (utils.shouldComponentMount(child)) {
+            utils.lifecycle('onAfterMount', child, $parent.childNodes[i] as HTMLElement)
+          }
+        })
     }
 
     return $parent
-  } else if (utils.isComponent(validVNode) && $parent) {
-    const component = createComponent($parent, validVNode as Types.Component, index)
-    return component
+  } else if (utils.isComponent(validVNode)) {
+    const $dom = $parent ? $parent.childNodes[index] as HTMLElement : undefined
+    return createComponent(validVNode as Types.Component, $dom)
   }
 }
 
@@ -150,7 +147,8 @@ function updateElement(
 
   else if (shouldReplaceVNode) {
     console.log('Replacing vNode', newVNode)
-    $parent.replaceChild(createElement(newVNode), $child)
+    const toReplace = createElement(newVNode)
+    $parent.replaceChild(toReplace, $child)
   }
 
   else if (shouldReplaceComponent) {
@@ -166,7 +164,7 @@ function updateElement(
     }
   }
 
-  else if (sameVNode) {
+  else if (sameVNode && $child) {
     const nVNode = newVNode as Types.VNode
     const oVNode = oldVNode as Types.VNode
     console.log('Moving on to children, nothing changed', nVNode)
