@@ -10,7 +10,12 @@ export function addEventListener($el: HTMLElement, name: string, event: any) {
   $el.addEventListener(extractEventName(name), event)
 }
 
-export function updateEventListener($el: HTMLElement, name: string, oldEvent: any, newEvent: any) {
+export function updateEventListener(
+  $el: HTMLElement,
+  name: string,
+  oldEvent: any,
+  newEvent: any,
+) {
   const hasChanged = newEvent !== oldEvent
   if (newEvent === undefined || hasChanged) {
     removeEventListener($el, name, oldEvent)
@@ -20,7 +25,11 @@ export function updateEventListener($el: HTMLElement, name: string, oldEvent: an
   }
 }
 
-export function removeEventListener($el: HTMLElement, name: string, event: any) {
+export function removeEventListener(
+  $el: HTMLElement,
+  name: string,
+  event: any,
+) {
   $el.removeEventListener(extractEventName(name), event)
 }
 
@@ -30,10 +39,16 @@ export function addEventListeners($el: HTMLElement, events: any = {}) {
     .forEach(name => addEventListener($el, name, events[name]))
 }
 
-export function updateEventListeners($el: HTMLElement, oldEvents: any = {}, newEvents: any = {}) {
+export function updateEventListeners(
+  $el: HTMLElement,
+  oldEvents: any = {},
+  newEvents: any = {},
+) {
   Object.keys({ ...newEvents, ...oldEvents })
     .filter(isEventAttribute)
-    .forEach(name => updateEventListener($el, name, newEvents[name], oldEvents[name]))
+    .forEach(name =>
+      updateEventListener($el, name, newEvents[name], oldEvents[name]),
+    )
 }
 
 export function addAttribute($el: HTMLElement, name: string, value: any) {
@@ -44,7 +59,11 @@ export function addAttribute($el: HTMLElement, name: string, value: any) {
   }
 }
 
-export function addBooleanAttribute($el: HTMLElement, name: string, value: boolean) {
+export function addBooleanAttribute(
+  $el: HTMLElement,
+  name: string,
+  value: boolean,
+) {
   if (value) {
     $el.setAttribute(name, value.toString())
     $el[name] = true
@@ -53,7 +72,12 @@ export function addBooleanAttribute($el: HTMLElement, name: string, value: boole
   }
 }
 
-export function updateAttribute($el: HTMLElement, name: string, oldValue: any, newValue: any) {
+export function updateAttribute(
+  $el: HTMLElement,
+  name: string,
+  oldValue: any,
+  newValue: any,
+) {
   if (newValue === undefined) {
     removeAttribute($el, name, oldValue)
   } else if (oldValue === undefined || newValue !== oldValue) {
@@ -80,8 +104,14 @@ export function addAttributes($el: HTMLElement, props: any = {}) {
     .forEach(key => addAttribute($el, key, props[key]))
 }
 
-export function updateAttributes($el: HTMLElement, newAttributes: any = {}, oldAttributes: any = {}) {
+export function updateAttributes(
+  $el: HTMLElement,
+  newAttributes: any = {},
+  oldAttributes: any = {},
+) {
   Object.keys({ ...oldAttributes, ...newAttributes })
     .filter(key => !isEventAttribute(key))
-    .forEach(key => updateAttribute($el, key, oldAttributes[key], newAttributes[key]))
+    .forEach(key =>
+      updateAttribute($el, key, oldAttributes[key], newAttributes[key]),
+    )
 }

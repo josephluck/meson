@@ -11,11 +11,10 @@ window['counts'] = {
   onAfterUnmount: 0,
 }
 
-
 const component = (count: number): Component<{ count: number }> => {
   return {
     state: {
-      count: 0
+      count: 0,
     },
     onBeforeMount() {
       window['counts'].onBeforeMount++
@@ -38,18 +37,49 @@ const component = (count: number): Component<{ count: number }> => {
     render(state, update) {
       window['counts'].componentRender++
       return h('p', { id: 'component' }, [
-        h('span', { id: 'component-onBeforeMount-count' }, window['counts'].onBeforeMount),
-        h('span', { id: 'component-onAfterMount-count' }, window['counts'].onAfterMount),
-        h('span', { id: 'component-onBeforeReplace-count' }, window['counts'].onBeforeReplace),
-        h('span', { id: 'component-onAfterReplace-count' }, window['counts'].onAfterReplace),
-        h('span', { id: 'component-onBeforeUnmount-count' }, window['counts'].onBeforeUnmount),
-        h('span', { id: 'component-onAfterUnmount-count' }, window['counts'].onAfterUnmount),
+        h(
+          'span',
+          { id: 'component-onBeforeMount-count' },
+          window['counts'].onBeforeMount,
+        ),
+        h(
+          'span',
+          { id: 'component-onAfterMount-count' },
+          window['counts'].onAfterMount,
+        ),
+        h(
+          'span',
+          { id: 'component-onBeforeReplace-count' },
+          window['counts'].onBeforeReplace,
+        ),
+        h(
+          'span',
+          { id: 'component-onAfterReplace-count' },
+          window['counts'].onAfterReplace,
+        ),
+        h(
+          'span',
+          { id: 'component-onBeforeUnmount-count' },
+          window['counts'].onBeforeUnmount,
+        ),
+        h(
+          'span',
+          { id: 'component-onAfterUnmount-count' },
+          window['counts'].onAfterUnmount,
+        ),
         h('span', { id: 'component-render-count' }, window['counts'].render),
-        h('button', { id: 'component-decrement-button', onclick: () => update({ count: state.count - 1 }) }, 'Decrement'),
+        h(
+          'button',
+          {
+            id: 'component-decrement-button',
+            onclick: () => update({ count: state.count - 1 }),
+          },
+          'Decrement',
+        ),
         h('span', { id: 'component-state-count' }, state.count),
-        'Ahh!'
+        'Ahh!',
       ])
-    }
+    },
   }
 }
 
@@ -65,7 +95,7 @@ const view: View<State> = (state = defaultState, update) => {
   return h('div', {}, [
     h('span', { id: 'count' }, state.count),
     h('button', { id: 'increment-button', onclick: increment }, 'Increment'),
-    component(state.count)
+    component(state.count),
   ])
 }
 

@@ -15,10 +15,8 @@ export default {
       .waitForElementVisible('body', 2000)
       .click('#increment-button')
       .click('#increment-button')
-    browser.expect.element('#component')
-      .to.be.present
-    browser.expect.element('#component-render-count')
-      .text.to.equal('1')
+    browser.expect.element('#component').to.be.present
+    browser.expect.element('#component-render-count').text.to.equal('1')
 
     browser.end()
   },
@@ -26,5 +24,5 @@ export default {
   after(browser, done) {
     server.stop()
     done()
-  }
+  },
 }

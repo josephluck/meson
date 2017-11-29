@@ -16,11 +16,19 @@ const counter = (name: string): Component<{ count: number }> => {
       const increment = () => update({ count: state.count + 1 })
       return h('div', {}, [
         h('span', { id: `render-count-counter-${name}` }, renderCounts[name]),
-        h('button', { id: `decrement-button-${name}`, onclick: decrement }, 'Decrement'),
+        h(
+          'button',
+          { id: `decrement-button-${name}`, onclick: decrement },
+          'Decrement',
+        ),
         h('span', { id: `count-${name}` }, state.count),
-        h('button', { id: `increment-button-${name}`, onclick: increment }, 'Increment'),
+        h(
+          'button',
+          { id: `increment-button-${name}`, onclick: increment },
+          'Increment',
+        ),
       ])
-    }
+    },
   }
 }
 
@@ -30,7 +38,7 @@ export type State = {
 
 const view: View<State> = (state, update) => {
   renderCounts.app++
-  const updateTitle = (e) => update({ title: e.target.value })
+  const updateTitle = e => update({ title: e.target.value })
   return h('div', {}, [
     h('span', { id: 'render-count-app' }, renderCounts.app),
     h('input', { id: 'update-title', oninput: updateTitle }),

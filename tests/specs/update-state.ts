@@ -10,20 +10,20 @@ export default {
   },
 
   'Renders Counter Initial State'(browser: NightwatchBrowser) {
-    browser
-      .url(server.domain)
-      .waitForElementVisible('body', 2000)
-    browser.expect.element('body')
+    browser.url(server.domain).waitForElementVisible('body', 2000)
+    browser.expect
+      .element('body')
       .text.to.contain('Increment')
       .before(2000)
-    browser.expect.element('body')
+    browser.expect
+      .element('body')
       .text.to.contain('Decrement')
       .before(2000)
-    browser.expect.element('#count')
+    browser.expect
+      .element('#count')
       .text.to.equal('0')
       .before(2000)
-    browser.expect.element('#render-count')
-      .text.to.equal('1')
+    browser.expect.element('#render-count').text.to.equal('1')
     browser.end()
   },
 
@@ -32,11 +32,11 @@ export default {
       .url(server.domain)
       .waitForElementVisible('body', 2000)
       .click('#increment-button')
-    browser.expect.element('#count')
+    browser.expect
+      .element('#count')
       .text.to.equal('1')
       .before(2000)
-    browser.expect.element('#render-count')
-      .text.to.equal('2')
+    browser.expect.element('#render-count').text.to.equal('2')
     browser.end()
   },
 
@@ -47,16 +47,16 @@ export default {
       .click('#increment-button')
       .click('#decrement-button')
       .click('#decrement-button')
-    browser.expect.element('#count')
+    browser.expect
+      .element('#count')
       .text.to.equal('-1')
       .before(2000)
-    browser.expect.element('#render-count')
-      .text.to.equal('4')
+    browser.expect.element('#render-count').text.to.equal('4')
     browser.end()
   },
 
   after(browser, done) {
     server.stop()
     done()
-  }
+  },
 }

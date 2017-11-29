@@ -50,9 +50,9 @@ const counter = (name: string): Component<{ count: number }> => {
         button('decrement', () => update({ count: state.count - 1 })),
         h('span', { id: state.count }, `${state.count} for ${name}`),
         button('increment', () => update({ count: state.count + 1 })),
-        null
+        null,
       ])
-    }
+    },
   }
 }
 
@@ -74,29 +74,36 @@ const conditionalCounter: Component<{ showing: boolean }> = {
     console.log('onAfterReplace conditional-counter')
   },
   render(state, update) {
-    return h('div', { id: 'conditional-counter', style: 'margin: 10px; border: solid 1px' }, [
-      state.showing ? counter('inside-conditional-counter-1') : null,
-      button('toggle counter', () => update({ showing: !state.showing })),
-      state.showing ? counter('inside-conditional-counter-2') : null,
-    ])
-  }
+    return h(
+      'div',
+      { id: 'conditional-counter', style: 'margin: 10px; border: solid 1px' },
+      [
+        state.showing ? counter('inside-conditional-counter-1') : null,
+        button('toggle counter', () => update({ showing: !state.showing })),
+        state.showing ? counter('inside-conditional-counter-2') : null,
+      ],
+    )
+  },
 }
 
-const view = (actions: Actions): View<State> => (state) => {
+const view = (actions: Actions): View<State> => state => {
   return h('div', { id: 'container' }, [
     counter(state.title),
     conditionalCounter,
     h('div', { style: 'margin: 10px; border: solid 1px' }, [
-      h('input', { value: state.title, oninput: e => actions.updateTitle(e.target.value) }),
+      h('input', {
+        value: state.title,
+        oninput: e => actions.updateTitle(e.target.value),
+      }),
       state.title,
     ]),
     counter('counter-2'),
     state.title === '' ? conditionalCounter : null,
-    null
+    null,
   ])
 }
 
-export default function () {
+export default function() {
   const node = document.createElement('div')
   node.style.margin = '100px'
   document.body.appendChild(node)

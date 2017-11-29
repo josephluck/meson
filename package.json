@@ -16,7 +16,8 @@
     "start": "budo ./tests/apps/conditional-rendering.ts --live --pushstate --host=localhost --port=8888 --base=/ -- -p tsify",
     "build": "rm -rf dist && tsc",
     "test": "npm run build && nightwatch",
-    "test-server": "npm run build && ts-node ./tests/run-test-server.ts"
+    "test-server": "npm run build && ts-node ./tests/run-test-server.ts",
+    "format": "prettier --write \"./**/*.{ts,tsx}\""
   },
   "dependencies": {
     "@types/nightwatch": "^0.9.3",
@@ -24,9 +25,17 @@
     "budo": "^10.0.4",
     "chromedriver": "^2.33.2",
     "nightwatch": "^0.9.16",
+    "prettier": "^1.8.2",
     "selenium-server": "^3.7.0",
     "ts-node": "^3.3.0",
     "tsify": "^3.0.3",
     "typescript": "^2.5.3"
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "parser": "typescript"
   }
 }

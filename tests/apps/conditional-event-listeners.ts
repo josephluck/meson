@@ -14,7 +14,14 @@ const view: View<State> = (state = defaultState, update) => {
   return h('div', {}, [
     h('span', { id: 'render-count' }, renderCount),
     h('span', { id: 'count' }, state.count),
-    h('button', { id: 'increment-button', onclick: state.count === 0 ? increment : undefined }, 'Increment'),
+    h(
+      'button',
+      {
+        id: 'increment-button',
+        onclick: state.count === 0 ? increment : undefined,
+      },
+      'Increment',
+    ),
   ])
 }
 

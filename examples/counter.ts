@@ -22,18 +22,18 @@ const button = (text: string, onclick: () => any) => {
   return h('button', { onclick }, text)
 }
 
-const view = (actions: Actions): View<State> => (state) => {
+const view = (actions: Actions): View<State> => state => {
   return h('div', {}, [
     h('div', {}, [
       button('decrement', actions.decrement),
       h('span', { id: state.count }, state.count),
       button('increment', actions.increment),
-      null
-    ])
+      null,
+    ]),
   ])
 }
 
-export default function () {
+export default function() {
   const node = document.createElement('div')
   node.style.margin = '100px'
   document.body.appendChild(node)

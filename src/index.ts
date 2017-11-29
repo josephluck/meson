@@ -3,13 +3,17 @@ import * as Types from './types'
 import * as utils from './utils'
 export { View, Update, Component } from './types'
 
-export function h(type: keyof HTMLElementTagNameMap, props?: any, children?: Types.ValidVNode | Types.ValidVNode[]): Types.VNode {
+export function h(
+  type: keyof HTMLElementTagNameMap,
+  props?: any,
+  children?: Types.ValidVNode | Types.ValidVNode[],
+): Types.VNode {
   return { type, props, children }
 }
 
 function createComponent(
   component: Types.Component,
-  $dom: HTMLElement | undefined
+  $dom: HTMLElement | undefined,
 ): HTMLElement | Text {
   let state = component.state
   const update = (updater: Types.Updater<any>) => {
@@ -39,14 +43,15 @@ function createElement(
   validVNode: Types.ValidVNode,
   $parent?: HTMLElement,
   index?: number,
-  create: boolean = false
+  create: boolean = false,
 ): HTMLElement | Text {
   if (typeof validVNode === 'string' || typeof validVNode === 'number') {
     return document.createTextNode(validVNode.toString())
   } else if (utils.isVNode(validVNode)) {
     const vNode = validVNode as Types.VNode
     const $parent = document.createElement(vNode.type)
-    const children = (vNode.children instanceof Array ? vNode.children : [vNode.children])
+    const children =
+      vNode.children instanceof Array ? vNode.children : [vNode.children]
     attributes.addAttributes($parent, vNode.props)
     attributes.addEventListeners($parent, vNode.props)
 
@@ -75,17 +80,20 @@ function createElement(
 
     // Call component lifecycle methods for all component children
     if (create) {
-      children
-        .forEach((child, i) => {
-          if (utils.shouldComponentMount(child)) {
-            utils.lifecycle('onAfterMount', child, $parent.childNodes[i] as HTMLElement)
-          }
-        })
+      children.forEach((child, i) => {
+        if (utils.shouldComponentMount(child)) {
+          utils.lifecycle('onAfterMount', child, $parent.childNodes[
+            i
+          ] as HTMLElement)
+        }
+      })
     }
 
     return $parent
   } else if (utils.isComponent(validVNode)) {
-    const $dom = $parent ? $parent.childNodes[index] as HTMLElement : undefined
+    const $dom = $parent
+      ? ($parent.childNodes[index] as HTMLElement)
+      : undefined
     return createComponent(validVNode as Types.Component, $dom)
   }
 }
@@ -103,10 +111,20 @@ function updateElement(
 
   // For append child
   const $child = $parent.childNodes[index] as HTMLElement
-  const shouldRemoveVNode = utils.isPresent(oldVNode) && utils.isVNode(oldVNode) && !utils.isPresent(newVNode)
-  const shouldRemoveComponent = utils.isPresent(oldVNode) && utils.isComponent(oldVNode) && !utils.isPresent(newVNode)
-  const shouldAppendVNode = !utils.isPresent(oldVNode) && utils.isVNode(newVNode)
-  const shouldAppendComponent = !utils.isPresent(oldVNode) && utils.isComponent(newVNode) && utils.shouldComponentMount(newVNode)
+  const shouldRemoveVNode =
+    utils.isPresent(oldVNode) &&
+    utils.isVNode(oldVNode) &&
+    !utils.isPresent(newVNode)
+  const shouldRemoveComponent =
+    utils.isPresent(oldVNode) &&
+    utils.isComponent(oldVNode) &&
+    !utils.isPresent(newVNode)
+  const shouldAppendVNode =
+    !utils.isPresent(oldVNode) && utils.isVNode(newVNode)
+  const shouldAppendComponent =
+    !utils.isPresent(oldVNode) &&
+    utils.isComponent(newVNode) &&
+    utils.shouldComponentMount(newVNode)
   const shouldReplaceVNode = utils.hasVNodeChanged(newVNode, oldVNode)
   const shouldReplaceComponent = utils.hasComponentChanged(newVNode, oldVNode)
   const sameVNode = utils.isVNode(newVNode) && utils.isVNode(oldVNode)
@@ -118,23 +136,24 @@ function updateElement(
     // This won't work, we can't rely on the index
     $parent.removeChild($child)
     utils.lifecycle('onAfterUnmount', oldVNode)
-  }
-
-  else if (shouldRemoveComponent) {
+  } else if (shouldRemoveComponent) {
     // This won't work, we can't rely on the index
     console.log('Removing component', oldVNode)
     $parent.removeChild($child)
-  }
-
-  else if (shouldAppendVNode) {
+  } else if (shouldAppendVNode) {
     // This isn't enough, if there are any skipped elements before the element in question
     console.log('Appending vNode', newVNode)
-    $parent.appendChild(createElement(newVNode, $parent as HTMLElement, index, true))
-  }
-
-  else if (shouldAppendComponent) {
+    $parent.appendChild(
+      createElement(newVNode, $parent as HTMLElement, index, true),
+    )
+  } else if (shouldAppendComponent) {
     // This isn't enough, if there are any skipped elements before the element in question
-    const toAppend = createElement(newVNode, $parent as HTMLElement, index, true)
+    const toAppend = createElement(
+      newVNode,
+      $parent as HTMLElement,
+      index,
+      true,
+    )
     if (utils.isPresent(toAppend)) {
       console.log('Appending component', newVNode)
       utils.lifecycle('onBeforeMount', newVNode)
@@ -143,16 +162,12 @@ function updateElement(
     } else {
       console.log('Skipping component', newVNode)
     }
-  }
-
-  else if (shouldReplaceVNode) {
+  } else if (shouldReplaceVNode) {
     console.log('Replacing vNode', newVNode)
     const toReplace = createElement(newVNode)
     $parent.replaceChild(toReplace, $child)
-  }
-
-  else if (shouldReplaceComponent) {
-    (newVNode as Types.Component).state = (oldVNode as Types.Component).state
+  } else if (shouldReplaceComponent) {
+    ;(newVNode as Types.Component).state = (oldVNode as Types.Component).state
     const toReplace = createElement(newVNode, $parent as HTMLElement, index)
     if (toReplace) {
       console.log('Replacing component', newVNode)
@@ -162,24 +177,19 @@ function updateElement(
     } else {
       console.log('Skipping component', newVNode)
     }
-  }
-
-  else if (sameVNode && $child) {
+  } else if (sameVNode && $child) {
     const nVNode = newVNode as Types.VNode
     const oVNode = oldVNode as Types.VNode
     console.log('Moving on to children, nothing changed', nVNode)
-    const nVNodeChildren = nVNode.children instanceof Array
-      ? nVNode.children
-      : [nVNode.children]
-    const oVNodeChildren = oVNode.children instanceof Array
-      ? oVNode.children
-      : [oVNode.children]
+    const nVNodeChildren =
+      nVNode.children instanceof Array ? nVNode.children : [nVNode.children]
+    const oVNodeChildren =
+      oVNode.children instanceof Array ? oVNode.children : [oVNode.children]
     attributes.updateAttributes($child, nVNode.props, oVNode.props)
     attributes.updateEventListeners($child, nVNode.props, oVNode.props)
-    utils.getLargestArray(nVNodeChildren, oVNodeChildren)
-      .forEach((c, i) => {
-        updateElement($child, nVNodeChildren[i], oVNodeChildren[i], i)
-      })
+    utils.getLargestArray(nVNodeChildren, oVNodeChildren).forEach((c, i) => {
+      updateElement($child, nVNodeChildren[i], oVNodeChildren[i], i)
+    })
   }
 }
 
@@ -198,9 +208,7 @@ export function app<S>(state: S) {
     render()
   }
   function update(updater: Types.Updater<S>) {
-    state = typeof updater === 'function'
-      ? updater(state)
-      : updater
+    state = typeof updater === 'function' ? updater(state) : updater
     render()
   }
   return { update, run }

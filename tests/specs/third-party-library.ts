@@ -9,15 +9,17 @@ export default {
     done()
   },
 
-  'Renders A Third Party Library Instead Of The Component'(browser: NightwatchBrowser) {
-    browser
-      .url(server.domain)
-      .waitForElementVisible('body', 2000)
+  'Renders A Third Party Library Instead Of The Component'(
+    browser: NightwatchBrowser,
+  ) {
+    browser.url(server.domain).waitForElementVisible('body', 2000)
     browser.expect.element('#3rd-party-library').to.be.present
     browser.end()
   },
 
-  'Persists The 3rd Party Library When The Component Is Rendered From The Outside'(browser: NightwatchBrowser) {
+  'Persists The 3rd Party Library When The Component Is Rendered From The Outside'(
+    browser: NightwatchBrowser,
+  ) {
     browser
       .url(server.domain)
       .waitForElementVisible('body', 2000)
@@ -29,5 +31,5 @@ export default {
   after(browser, done) {
     server.stop()
     done()
-  }
+  },
 }

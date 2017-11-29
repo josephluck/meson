@@ -12,16 +12,15 @@ export default function startApp(app: string): Promise<FrontEndServer> {
     server = budo(app, {
       live: true,
       port: 8000,
-    })
-      .on('connect', ev => {
-        console.log('Running front-end server at url: ', ev.uri)
-        resolve({
-          domain: ev.uri,
-          stop() {
-            console.log('Closing front-end server for app: ', app)
-            server.close()
-          }
-        })
+    }).on('connect', ev => {
+      console.log('Running front-end server at url: ', ev.uri)
+      resolve({
+        domain: ev.uri,
+        stop() {
+          console.log('Closing front-end server for app: ', app)
+          server.close()
+        },
       })
+    })
   })
 }

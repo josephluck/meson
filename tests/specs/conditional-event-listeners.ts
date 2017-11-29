@@ -9,24 +9,30 @@ export default {
     done()
   },
 
-  'Adds The Event Listener When The Condition Is Met'(browser: NightwatchBrowser) {
+  'Adds The Event Listener When The Condition Is Met'(
+    browser: NightwatchBrowser,
+  ) {
     browser
       .url(server.domain)
       .waitForElementVisible('body', 2000)
       .click('#increment-button')
-    browser.expect.element('#count')
+    browser.expect
+      .element('#count')
       .text.to.contain('1')
       .before(2000)
 
     browser.end()
   },
-  'Removes The Event Listener When The Condition Is Not Met'(browser: NightwatchBrowser) {
+  'Removes The Event Listener When The Condition Is Not Met'(
+    browser: NightwatchBrowser,
+  ) {
     browser
       .url(server.domain)
       .waitForElementVisible('body', 2000)
       .click('#increment-button')
       .click('#increment-button')
-    browser.expect.element('#count')
+    browser.expect
+      .element('#count')
       .text.to.contain('1')
       .before(2000)
 
@@ -36,5 +42,5 @@ export default {
   after(browser, done) {
     server.stop()
     done()
-  }
+  },
 }

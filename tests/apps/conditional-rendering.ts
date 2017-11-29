@@ -12,7 +12,7 @@ const component: Component<{}> = {
   state: {},
   render() {
     return h('p', { id: 'conditional-component' }, 'Ahh!')
-  }
+  },
 }
 
 const view: View<State> = (state = defaultState, update) => {
@@ -22,9 +22,13 @@ const view: View<State> = (state = defaultState, update) => {
     // h('span', { id: 'render-count' }, renderCount),
     // h('span', { id: 'count' }, state.count),
     h('button', { id: 'increment-button', onclick: increment }, 'Increment'),
-    state.count === 1 ? h('p', { id: 'conditional-element' }, 'Boo!') : h('span'),
-    state.count === 2 ? component : h('span'),
-    h('span', { id: 'should-persist-this-element' }, 'Should persist this element')
+    state.count === 1 ? h('p', { id: 'conditional-element' }, 'Boo!') : '',
+    state.count === 2 ? component : '',
+    h(
+      'span',
+      { id: 'should-persist-this-element' },
+      'Should persist this element',
+    ),
   ])
 }
 

@@ -16,9 +16,9 @@ const component = (count: number): Component<{}> => {
       return h('p', { id: 'component' }, [
         h('span', { id: 'component-render-count' }, renderCounts.component),
         h('span', { id: 'component-outside-prop' }, count),
-        'Ahh!'
+        'Ahh!',
       ])
-    }
+    },
   }
 }
 
@@ -35,7 +35,7 @@ const view: View<State> = (state = defaultState, update) => {
     h('span', { id: 'render-count' }, renderCounts.app),
     h('span', { id: 'count' }, state.count),
     h('button', { id: 'increment-button', onclick: increment }, 'Increment'),
-    component(state.count)
+    component(state.count),
   ])
 }
 

@@ -15,9 +15,9 @@ const component = (count: number): Component<{}> => {
       renderCounts.component++
       return h('p', { id: 'conditional-component' }, [
         h('span', { id: 'component-render-count' }, renderCounts.component),
-        'Ahh!'
+        'Ahh!',
       ])
-    }
+    },
   }
 }
 
@@ -34,7 +34,7 @@ const view: View<State> = (state = defaultState, update) => {
     h('span', { id: 'render-count' }, renderCounts.app),
     h('span', { id: 'count' }, state.count),
     h('button', { id: 'increment-button', onclick: increment }, 'Increment'),
-    component(state.count)
+    component(state.count),
   ])
 }
 

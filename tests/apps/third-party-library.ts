@@ -4,7 +4,6 @@ window['counts'] = {
   render: 0,
 }
 
-
 const component = (count: number): Component => {
   return {
     state: {},
@@ -17,10 +16,8 @@ const component = (count: number): Component => {
       return false
     },
     render(state, update) {
-      return h('p', { id: 'component' }, [
-        'Shouldnt render this'
-      ])
-    }
+      return h('p', { id: 'component' }, ['Shouldnt render this'])
+    },
   }
 }
 
@@ -36,7 +33,7 @@ const view: View<State> = (state = defaultState, update) => {
   return h('div', {}, [
     h('span', { id: 'count' }, state.count),
     h('button', { id: 'increment-button', onclick: increment }, 'Increment'),
-    component(state.count)
+    component(state.count),
   ])
 }
 

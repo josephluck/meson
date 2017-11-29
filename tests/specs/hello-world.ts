@@ -10,11 +10,10 @@ export default {
   },
   'Renders Hello World': async (browser: NightwatchBrowser) => {
     console.log(server.domain)
-    browser
-      .url(server.domain)
-      .waitForElementVisible('body', 2000)
+    browser.url(server.domain).waitForElementVisible('body', 2000)
 
-    browser.expect.element('body')
+    browser.expect
+      .element('body')
       .text.to.contain('Hello World')
       .before(2000)
 
@@ -24,5 +23,5 @@ export default {
   after(browser, done) {
     server.stop()
     done()
-  }
+  },
 }
